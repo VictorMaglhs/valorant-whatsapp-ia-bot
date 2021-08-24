@@ -1,0 +1,23 @@
+{
+  "name": "whatsapp-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev -r tsconfig-paths/register --inspect --transpile-only --ignore-watch node_modules index.ts"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@adiwajshing/baileys": "^3.5.2",
+    "@types/bcrypt": "^5.0.0",
+    "@types/sequelize": "^4.28.10",
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "mysql2": "^2.3.0",
+    "ts-node-dev": "^1.1.8",
+    "typeorm": "^0.2.37",
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "tsconfig-paths": "^3.10.1"
+  }
+}

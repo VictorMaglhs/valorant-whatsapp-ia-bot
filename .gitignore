@@ -1,0 +1,8 @@
+node_modules/
+ormconfig.env
+.env
+readme.MD
+todo.MD
+tsconfig.json
+yarn-error.log
+yarn.lock
