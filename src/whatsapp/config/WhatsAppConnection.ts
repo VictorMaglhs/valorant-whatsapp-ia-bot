@@ -1,71 +1,81 @@
-import {
-  WAConnection,
-  ReconnectMode,
-  waChatKey,
-  WAConnectOptions,
-  DisconnectReason,
-  WAOpenResult,
-  MessageType,
-  WAChatUpdate,
-  WAChat,
-} from "@adiwajshing/baileys";
-
-import { writeFileSync, unlink, existsSync } from "fs";
-
-const la = "./src/whatsapp/config/ConnectionCredentials.json";
+import { WAConnection, DisconnectReason } from "@adiwajshing/baileys";
+import { credentialsModel } from "@models/CredentialsModel";
 
 class WhatsAppConnection {
   public conn = new WAConnection();
-  private authCredentials: string;
-  private autoReconnect: ReconnectMode = 1;
-  private connectOptions: WAConnectOptions["maxRetries"] = 10;
-  private chatOrderingKey: WAConnection["chatOrderingKey"] = waChatKey(true);
 
-  constructor(authCredentials: string) {
-    this.authCredentials = authCredentials;
-  }
+  // # ARMAZENAR CREDENDIAIS
+  private async storeCredentials(
+    client_id: string,
+    server_token: string,
+    client_token: string,
+    enc_key: string,
+    mac_key: string
+  ) {
+    const getCredentials = await credentialsModel.select(1);
 
-  private async storeCredentials(authCredentials: string) {
-    writeFileSync(
-      "./src/whatsapp/config/ConnectionCredentials.json",
-      authCredentials
-    );
-  }
+    const credentialsData = {
+      id: 1,
+      client_id,
+      server_token,
+      client_token,
+      enc_key,
+      mac_key,
+    };
 
-  public async openConnection(): Promise<WAOpenResult | undefined> {
-    this.autoReconnect;
-    this.connectOptions;
-    this.chatOrderingKey;
+    if (!getCredentials) {
+      console.log("---------> CRIOU CREDENCIAIS");
 
-    if (la) {
-      this.conn.loadAuthInfo(la);
-      return await this.conn.connect();
+      credentialsModel.create(credentialsData);
     } else {
-      await this.conn.connect();
-      const credentials = this.conn.base64EncodedAuthInfo();
-      this.storeCredentials(JSON.stringify(credentials, null, "\t"));
+      console.log("---------> ATUALIZOU CREDENCIAIS");
+      credentialsModel.update(credentialsData, { id: 1 });
     }
   }
 
-  public async newConversation() {
-    this.conn.on("chat-update", async (chat: WAChat) => {
-      if (chat.messages == undefined) return;
+  // # GERAR CREDENCIAIS
+  public async generateCredentials() {
+    this.conn.connectOptions.maxRetries = 3;
+    this.conn.connectOptions.queryChatsTillReceived = true;
+    this.conn.clearAuthInfo();
+    await this.conn.connect();
 
-      const m = chat.messages.all()[0];
-      // if (m.key.fromMe) return;
-      const messageContent = m.message?.conversation;
+    const tokens = this.conn.base64EncodedAuthInfo();
 
-      if (!messageContent || m.key.fromMe) return;
-      console.log("chat", chat.presences?.name);
-      console.log("key ", m.key);
-      console.log(`mensagem: ${messageContent}`);
+    this.storeCredentials(
+      tokens.clientID,
+      tokens.serverToken,
+      tokens.clientToken,
+      tokens.encKey,
+      tokens.macKey
+    );
+  }
 
-      //console.log(messageContent);
+  // CONECTAR
+  public async connect() {
+    const getCredentials = await credentialsModel.select(1);
 
-      // if (sender == "554197212482@s.whatsapp.net") {
-      //   await this.conn.sendMessage(sender, "porra e essa", messageType.);
-      // }
-    });
+    this.conn.on(
+      "close",
+      async (err: { reason: DisconnectReason; isReconnecting: boolean }) => {
+        return await this.generateCredentials();
+      }
+    );
+
+    if (!getCredentials) {
+      this.generateCredentials();
+    } else {
+      const credentials = {
+        clientID: `${getCredentials!.client_id}`,
+        serverToken: `${getCredentials!.server_token}`,
+        clientToken: `${getCredentials!.client_token}`,
+        encKey: `${getCredentials!.enc_key}`,
+        macKey: `${getCredentials!.mac_key}`,
+      };
+
+      this.conn.loadAuthInfo(credentials);
+      await this.conn.connect();
+    }
   }
 }
 

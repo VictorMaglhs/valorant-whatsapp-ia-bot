@@ -1,18 +1,17 @@
+import { WAChat } from "@adiwajshing/baileys";
 import WhatsAppConnection from "../config/WhatsAppConnection";
 
 class WhatsAppConversation {
-  private client: WhatsAppConnection;
+  private client = new WhatsAppConnection();
 
-  constructor(client: WhatsAppConnection) {
-    this.client = client;
+  public async connect() {
+    this.client.connect();
   }
 
-  private async connect() {
-    return await this.client.openConnection();
-  }
-
-  public async onNewChat() {
-    this.connect();
+  public async newConversation() {
+    this.client.conn.on("chat-update", async (chat: WAChat) => {
+      return;
+    });
   }
 }
 
