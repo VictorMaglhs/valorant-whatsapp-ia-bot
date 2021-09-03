@@ -1,4 +1,12 @@
-import { EntityTarget, Repository, getRepository } from "typeorm";
+import {
+  EntityTarget,
+  Repository,
+  getRepository,
+  InsertResult,
+  UpdateResult,
+  DeleteResult,
+} from "typeorm";
+import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 class Model<T> {
   private entity: EntityTarget<T>;
@@ -11,24 +19,29 @@ class Model<T> {
     return getRepository(this.entity);
   }
 
-  public async create(data: T): Promise<void> {
+  public async create(data: T): Promise<InsertResult> {
     const repository = this.getRepository();
-    await repository.insert(data);
+    return await repository.insert(data);
   }
 
-  public async select(id: string | number): Promise<T | undefined> {
+  public async select(
+    value: QueryDeepPartialEntity<T>
+  ): Promise<T | undefined> {
     const repository = this.getRepository();
-    return await repository.findOne(id, { where: id });
+    return await repository.findOne(value);
   }
 
-  public async update(data: T, where: T): Promise<void> {
+  public async update(
+    where: T,
+    value: QueryDeepPartialEntity<T>
+  ): Promise<UpdateResult> {
     const repository = this.getRepository();
-    await repository.update(where, data);
+    return await repository.update(where, value);
   }
 
-  public async delete(id: T): Promise<void> {
+  public async delete(id: T): Promise<DeleteResult> {
     const repository = this.getRepository();
-    await repository.delete(id);
+    return await repository.delete(id);
   }
 }
 
