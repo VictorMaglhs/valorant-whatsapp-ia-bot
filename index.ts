@@ -10,7 +10,7 @@ const x = async () => {
 
   const b = new WhatsAppConversation();
   await b.connect();
-  b.newConversation();
+  b.conversation();
 };
 
 x();
