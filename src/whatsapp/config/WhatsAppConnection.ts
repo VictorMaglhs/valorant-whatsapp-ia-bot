@@ -40,20 +40,21 @@ class WhatsAppConnection {
     this.conn.clearAuthInfo();
     await this.conn.connect();
 
-    const tokens = this.conn.base64EncodedAuthInfo();
+    const authTokens = this.conn.base64EncodedAuthInfo();
 
     this.storeCredentials(
-      tokens.clientID,
-      tokens.serverToken,
-      tokens.clientToken,
-      tokens.encKey,
-      tokens.macKey
+      authTokens.clientID,
+      authTokens.serverToken,
+      authTokens.clientToken,
+      authTokens.encKey,
+      authTokens.macKey
     );
   }
 
   // CONECTAR
   public async connect() {
     const getCredentials = await credentialsModel.select(1);
+    console.log(getCredentials);
 
     this.conn.on(
       "close",
@@ -62,20 +63,16 @@ class WhatsAppConnection {
       }
     );
 
-    if (!getCredentials) {
-      this.generateCredentials();
-    } else {
-      const credentials = {
-        clientID: `${getCredentials!.client_id}`,
-        serverToken: `${getCredentials!.server_token}`,
-        clientToken: `${getCredentials!.client_token}`,
-        encKey: `${getCredentials!.enc_key}`,
-        macKey: `${getCredentials!.mac_key}`,
-      };
-
-      this.conn.loadAuthInfo(credentials);
-      await this.conn.connect();
-    }
+    if (!getCredentials) await this.generateCredentials();
+    const credentials = {
+      clientID: `${getCredentials!.client_id}`,
+      serverToken: `${getCredentials!.server_token}`,
+      clientToken: `${getCredentials!.client_token}`,
+      encKey: `${getCredentials!.enc_key}`,
+      macKey: `${getCredentials!.mac_key}`,
+    };
+    this.conn.loadAuthInfo(credentials);
+    await this.conn.connect();
   }
 }
 
