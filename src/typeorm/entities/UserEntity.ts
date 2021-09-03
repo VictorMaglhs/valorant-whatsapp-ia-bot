@@ -6,8 +6,8 @@ export class User {
   id?: number;
 
   @Column()
-  phone!: string;
+  step!: number;
 
   @Column()
-  name!: string;
+  phone!: string;
 }
