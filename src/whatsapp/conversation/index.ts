@@ -4,8 +4,8 @@ import {
   Mimetype,
   MimetypeMap,
 } from "@adiwajshing/baileys";
-import { userModel } from "@database/models/UserModel";
-import { BotStep } from "src/types/Step";
+import { userModel } from "_models/UserModel";
+import { BotStep } from "_types/Step";
 import WhatsAppConnection from "../config/WhatsAppConnection";
 import { main } from "src/valorant/RegisterRequest";
 import { readFileSync } from "fs";

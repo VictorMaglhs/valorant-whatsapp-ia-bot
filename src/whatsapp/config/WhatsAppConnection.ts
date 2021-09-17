@@ -1,5 +1,5 @@
 import { WAConnection, DisconnectReason } from "@adiwajshing/baileys";
-import { credentialsModel } from "@models/CredentialsModel";
+import { credentialsModel } from "_models/CredentialsModel";
 
 class WhatsAppConnection {
   public conn = new WAConnection();
@@ -12,7 +12,7 @@ class WhatsAppConnection {
     enc_key: string,
     mac_key: string
   ) {
-    const getCredentials = await credentialsModel.select(1);
+    const getCredentials = await credentialsModel.select({ id: 1 });
 
     const credentialsData = {
       id: 1,
@@ -53,7 +53,7 @@ class WhatsAppConnection {
 
   // CONECTAR
   public async connect() {
-    const getCredentials = await credentialsModel.select(1);
+    const getCredentials = await credentialsModel.select({ id: 1 });
     console.log(getCredentials);
 
     this.conn.on(

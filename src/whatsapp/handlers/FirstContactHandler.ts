@@ -1,14 +1,14 @@
 import { MessageType, WA, WAChat } from "@adiwajshing/baileys";
-import { userModel } from "@database/models/UserModel";
-import WhatsAppConversation from "..";
+import { userModel } from "_models/UserModel";
+import WhatsAppConversation from "../conversation";
 
-import WhatsAppConnection from "../../config/WhatsAppConnection";
+import WhatsAppConnection from "../config/WhatsAppConnection";
 
 class FirstContact {
   private static client = new WhatsAppConnection();
 
   public static async firstContactHandler(phone: string) {
-    const contact = await userModel.findUser(phone);
+    const contact = await userModel.select({ phone });
 
     console.log(this.client.conn.state);
 
