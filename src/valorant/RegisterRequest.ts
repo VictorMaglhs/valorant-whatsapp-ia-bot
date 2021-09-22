@@ -137,6 +137,8 @@ export const main = async (login: string, phone: string) => {
   if (pistols.includes(skinNames[0])) {
     if (skinNames[0] == "Classic") {
       context.drawImage(skin1, 350, 50, 275, 135);
+    } else if (skinNames[0] == "Sheriff") {
+      context.drawImage(skin1, 350, 50, 312, 152);
     } else {
       context.drawImage(skin1, 250, 50, 400, 105);
     }
@@ -149,6 +151,8 @@ export const main = async (login: string, phone: string) => {
   if (pistols.includes(skinNames[1])) {
     if (skinNames[1] == "Classic") {
       context.drawImage(skin2, 350, 250, 275, 135);
+    } else if (skinNames[1] == "Sheriff") {
+      context.drawImage(skin2, 350, 250, 312, 152);
     } else {
       context.drawImage(skin2, 250, 250, 400, 105);
     }
@@ -161,6 +165,8 @@ export const main = async (login: string, phone: string) => {
   if (pistols.includes(skinNames[2])) {
     if (skinNames[2] == "Classic") {
       context.drawImage(skin3, 350, 450, 275, 135);
+    } else if (skinNames[2] == "Sheriff") {
+      context.drawImage(skin3, 350, 450, 312, 152);
     } else {
       context.drawImage(skin3, 250, 450, 400, 105);
     }
@@ -173,6 +179,10 @@ export const main = async (login: string, phone: string) => {
   if (pistols.includes(skinNames[3])) {
     if (skinNames[3] == "Classic") {
       context.drawImage(skin4, 350, 650, 275, 135);
+    } else if (skinNames[3] == "Sheriff") {
+      console.log(skin4);
+
+      context.drawImage(skin4, 350, 650, 312, 152);
     } else {
       context.drawImage(skin4, 250, 650, 400, 105);
     }
