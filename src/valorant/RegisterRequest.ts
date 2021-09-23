@@ -187,5 +187,5 @@ export const main = async (login: string, phone: string) => {
   return skins;
 };
 
-// main("agrro2000 MARvic123.", "5531991292142");
+// main("", "");
 export default main;
