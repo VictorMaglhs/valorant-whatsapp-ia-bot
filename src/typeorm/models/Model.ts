@@ -5,6 +5,7 @@ import {
   InsertResult,
   UpdateResult,
   DeleteResult,
+  FindConditions,
 } from "typeorm";
 import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
@@ -32,7 +33,7 @@ class Model<T> {
   }
 
   public async update(
-    where: T,
+    where: FindConditions<T>,
     value: QueryDeepPartialEntity<T>
   ): Promise<UpdateResult> {
     const repository = this.getRepository();
