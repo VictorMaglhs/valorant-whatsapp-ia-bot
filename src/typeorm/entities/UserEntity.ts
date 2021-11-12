@@ -10,4 +10,13 @@ export class User {
 
   @Column()
   phone!: string;
+
+  @Column()
+  user?: string;
+
+  @Column()
+  password?: string;
+
+  @Column()
+  token?: string;
 }
