@@ -157,4 +157,5 @@ export const main = async (login: string, phone: string) => {
   return skins;
 };
 
+// main("", "");
 export default main;
