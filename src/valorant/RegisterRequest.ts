@@ -2,6 +2,7 @@ import axios from "axios";
 import { createCanvas, loadImage, Image } from "canvas";
 import { writeFileSync } from "fs";
 import path from "path";
+import { userModel } from "_database/models/UserModel";
 
 const getCookie = async () => {
   const response = await axios.post(
@@ -103,7 +104,7 @@ const getWeaponList = async (): Promise<Weapon[]> => {
 
 export const main = async (login: string, phone: string) => {
   const cookie = await getCookie();
-  const data = await authorize(cookie, login);
+  const data = await authorize(cookie, phone);
   const token = await getToken(data.get("access_token"));
   const sub = await getUserInfo(data.get("access_token"), token);
   const store = await getWeapons(data.get("access_token"), token, sub);
@@ -112,90 +113,48 @@ export const main = async (login: string, phone: string) => {
   const levels = weaponList.flatMap((gun) => gun.levels);
 
   const skins = store.map((uuid) => {
-    const skin = levels.find((level) => level.uuid === uuid);
-    return skin;
+    return levels.find((level) => level.uuid === uuid)!;
   });
 
-  const canvas = createCanvas(800, 800);
+  const canvas = createCanvas(1280, 720);
   const context = canvas.getContext("2d");
   context.fillStyle = "#000000";
-  const images = skins.map((image) => {
-    return image!.displayIcon;
-  });
-  const skinNames = skins.map((parameters) => {
-    return parameters!.displayName.split(" ")[0];
-  });
   const background = await loadImage(
     "https://fiverr-res.cloudinary.com/images/q_auto,f_auto/gigs3/151516766/original/8a39eb87560715d09d8574caca74fd63f870eace/sell-custom-valorant-stinger-transition.png"
   );
-  context.drawImage(background, 0, 0, 800, 800);
+  context.drawImage(background, 0, 0, 1280, 720);
 
   const pistols = ["Sheriff", "Classic", "Frenzy", "Ghost", "Shorty"];
 
-  // PRIMEIRA ARMA
-  const skin1 = await loadImage(images[0]);
-  if (pistols.includes(skinNames[0])) {
-    if (skinNames[0] == "Classic") {
-      context.drawImage(skin1, 350, 50, 275, 135);
-    } else if (skinNames[0] == "Sheriff") {
-      context.drawImage(skin1, 350, 50, 312, 152);
-    } else {
-      context.drawImage(skin1, 250, 50, 400, 105);
-    }
-  } else {
-    context.drawImage(skin1, 140, 50, 512, 120);
-  }
+  await Promise.all(
+    skins.map(async (skin, index) => {
+      const indexHeight = index * 200 + 50;
+      const { displayName, displayIcon } = skin;
+      const [name] = displayName.split(" ");
 
-  // SEGUNDA ARMA
-  const skin2 = await loadImage(images[1]);
-  if (pistols.includes(skinNames[1])) {
-    if (skinNames[1] == "Classic") {
-      context.drawImage(skin2, 350, 250, 275, 135);
-    } else if (skinNames[1] == "Sheriff") {
-      context.drawImage(skin2, 350, 250, 312, 152);
-    } else {
-      context.drawImage(skin2, 250, 250, 400, 105);
-    }
-  } else {
-    context.drawImage(skin2, 140, 250, 512, 120);
-  }
+      const image = await loadImage(displayIcon);
+      const width = 400;
+      const aspectRatio = (image.height / image.width) * width;
+      const classicAspectRatio = (image.height / image.width) * 250;
 
-  // TERCEIRA ARMA
-  const skin3 = await loadImage(images[2]);
-  if (pistols.includes(skinNames[2])) {
-    if (skinNames[2] == "Classic") {
-      context.drawImage(skin3, 350, 450, 275, 135);
-    } else if (skinNames[2] == "Sheriff") {
-      context.drawImage(skin3, 350, 450, 312, 152);
-    } else {
-      context.drawImage(skin3, 250, 450, 400, 105);
-    }
-  } else {
-    context.drawImage(skin3, 140, 450, 512, 120);
-  }
-
-  // QUARTA ARMA
-  const skin4 = await loadImage(images[3]);
-  if (pistols.includes(skinNames[3])) {
-    if (skinNames[3] == "Classic") {
-      context.drawImage(skin4, 350, 650, 275, 135);
-    } else if (skinNames[3] == "Sheriff") {
-      console.log(skin4);
-
-      context.drawImage(skin4, 350, 650, 312, 152);
-    } else {
-      context.drawImage(skin4, 250, 650, 400, 105);
-    }
-  } else {
-    context.drawImage(skin4, 140, 650, 512, 120);
-  }
-
-  //RENDERIZAR CANVAS
+      if (pistols.includes(name)) {
+        if (name == "Classic") {
+          context.drawImage(image, 250, indexHeight, width, classicAspectRatio);
+        } else if (name == "Sheriff") {
+          context.drawImage(image, 250, indexHeight, width, aspectRatio);
+        } else {
+          context.drawImage(image, 250, indexHeight, width, aspectRatio);
+        }
+        return;
+      } else {
+        context.drawImage(image, 250, indexHeight, width, aspectRatio);
+      }
+    })
+  );
   const buffer = canvas.toBuffer("image/jpeg");
   const dir = path.resolve(__dirname, "../dump");
   writeFileSync(`${dir}/${phone}.jpeg`, buffer);
   return skins;
 };
 
-// main("agrro2000 MARvic123.", "5531991292142");
 export default main;
