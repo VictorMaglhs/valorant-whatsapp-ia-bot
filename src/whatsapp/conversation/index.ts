@@ -10,6 +10,7 @@ import WhatsAppConnection from "../config/WhatsAppConnection";
 import { main } from "src/valorant/RegisterRequest";
 import { readFileSync } from "fs";
 import path from "path";
+import FirstContact from "../handlers/FirstContactHandler";
 
 class WhatsAppConversation {
   private client = new WhatsAppConnection();
@@ -48,37 +49,36 @@ class WhatsAppConversation {
         message.key.fromMe ||
         sender == "status";
       if (configuration) return;
-      const msg = message.message?.conversation;
+
+      const msg = message.message?.conversation!;
 
       const step = await this.getUserStep(sender);
 
       if (step == BotStep.FIRST_CONTACT || !step) {
+        // FirstContact.firstContactHandler(sender);
         await this.client.conn.sendMessage(
           sender,
-          "FAAAALA, beleza? Ta afim de saber sua loja?? Então primeiro vou precisar que você me passe seu login e senha eu pegar suas skins, desse jeito: \n\n*usuario senha*\n\n(relaaxa, não vou clonar cartão)\n\n ̿̿ ̿̿ ̿̿ ̿'̿'̵͇̿̿з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿",
+          "FAAAALA, beleza? Ta afim de saber sua loja?? Então primeiro vou precisar que você logue por aqui mesmo! Dessa forma: \n\n*usuario senha*\n\n(Você só precisa logar uma vez, depois só me manda um oi que ta tudo certo)\n\n ̿̿ ̿̿ ̿̿ ̿'̿'̵͇̿̿з= ( ▀ ͜͞ʖ▀) =ε/̵͇̿̿/’̿’̿ ̿ ̿̿ ̿̿ ̿̿",
           MessageType.text
         );
         console.log(step);
-
-        return await userModel.update({ phone: sender, step: 0 }, { step: 1 });
+        return await userModel.update({ phone: sender }, { step: 1 });
       }
+
       if (step == BotStep.REGISTRATION) {
+        // FirstContact.firstContactHandler(sender);
         const response = await main(msg!, sender.split("@")[0]);
         const skins = response.map((parameters) => {
-          return parameters!.displayName + "\n";
+          return parameters.displayName + "\n";
         });
-
         await this.client.conn.sendMessage(
           sender,
           `AQUI TAO SUAS SKINS CORRE PRA COMPRAR!!🔫🔫 \n\n${skins.join("")}`,
           MessageType.text
         );
-
         const dir = path.resolve(__dirname, "../../dump");
         console.log(dir);
-
         const skinPng = readFileSync(`${dir}/${sender.split("@")[0]}.jpeg`);
-
         return await this.client.conn.sendMessage(
           sender,
           skinPng,
