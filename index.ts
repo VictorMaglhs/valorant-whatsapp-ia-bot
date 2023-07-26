@@ -1,16 +1,12 @@
-import dbConnection from "_database/connection";
-
-import WhatsAppConnection from "src/whatsapp/config/WhatsAppConnection";
-import { userModel } from "_models/UserModel";
-import WhatsAppConversation from "src/whatsapp/conversation";
-// import WhatsAppConversation from "src/whatsapp/conversation";
+import WhatsAppConversation from "./src/whatsapp/conversation/index";
+import dbConnection from "./src/typeorm/connection";
 
 const x = async () => {
-  await dbConnection();
+	await dbConnection();
 
-  const b = new WhatsAppConversation();
-  await b.connect();
-  b.conversation();
+	const b = new WhatsAppConversation();
+	await b.connect();
+	b.conversation();
 };
 
 x();

@@ -1,5 +1,5 @@
 export enum BotStep {
-  FIRST_CONTACT = 0,
-  REGISTRATION = 1,
-  AUTHORIZED = 2,
+	FIRST_CONTACT = 0,
+	REGISTRATION = 1,
+	AUTHORIZED = 2,
 }
